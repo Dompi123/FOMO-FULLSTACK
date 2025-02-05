@@ -1,0 +1,11 @@
+{
+  "user": {
+    "id": "usr_test_123",
+    "email": "test@example.com",
+    "verified": true
+  },
+  "session": {
+    "token": "sess_test_456",
+    "expires_at": "2025-12-31T23:59:59Z"
+  }
+}

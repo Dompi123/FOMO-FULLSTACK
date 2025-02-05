@@ -1,0 +1,15 @@
+{
+  "tokenization": {
+    "card_token": "tok_test_123456789",
+    "expiry": "12/25",
+    "last4": "4242"
+  },
+  "payment_methods": [
+    {
+      "id": "pm_1",
+      "type": "card",
+      "brand": "visa",
+      "last4": "4242"
+    }
+  ]
+}

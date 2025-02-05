@@ -1,0 +1,30 @@
+version: 1.1
+target: fomofinal
+migration:
+  source: fomoskip
+  exclude:
+    - "/LegacyCoreData"
+    - "SentryIntegration.swift"
+    - "fomoskip.xcodeproj"
+
+validation:
+  steps:
+    - name: namespace_check
+      command: grep -r "@objc(Pass)" . | wc -l
+      expect: 0
+    - name: build_validation
+      command: swift build && xcodebuild test -scheme fomofinal
+
+hooks:
+  pre_migration:
+    - cursor backup-project --target fomofinal
+  post_migration:
+    - cursor generate-dashboard --output migration_report.html
+
+symlinks:
+  - source: ../fomoskip/fomoskip.xcodeproj
+    target: fomoskip.xcodeproj
+
+sync_dirs:
+  - source: ../fomoskip/Preview Content
+    target: Preview Content 
