@@ -1,0 +1,39 @@
+name: Payment Flow Validation
+
+on:
+  pull_request:
+    paths:
+      - 'FOMO_FINAL/Payment/**'
+      - 'FOMO_FINALTests/Payment/**'
+
+jobs:
+  payment-security:
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v1
+        
+      - name: Install Dependencies
+        run: |
+          brew install swiftlint
+          
+      - name: Run SwiftLint
+        run: swiftlint --strict FOMO_FINAL/Payment/
+        
+      - name: Run Tests
+        run: |
+          swift test --filter PaymentFlowTests/testLiveTokenizationSuccess
+          swift test --filter PaymentFlowTests/testSecureURLEnforcement
+          ./scripts/validate_tokenization.sh
+        env:
+          API_KEY: ${{ secrets.PAYMENT_KEY }}
+          
+      - name: Security Audit
+        run: |
+          # Check for HTTPS enforcement
+          grep -q 'url.scheme == "https"' FOMO_FINAL/Payment/Tokenization/LiveTokenizationService.swift
+          
+          # Verify keychain usage
+          grep -q 'KeychainManager.shared.retrieve(for: .apiKey)' FOMO_FINAL/Payment/Tokenization/LiveTokenizationService.swift 

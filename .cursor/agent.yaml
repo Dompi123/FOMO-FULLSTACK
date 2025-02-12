@@ -1,0 +1,6 @@
+version: 1.0
+strategy: full_preview
+order: sequential
+reference: main
+validation_script: scripts/verify_final_preview.sh
+mock_file: PreviewData/FullContext.json 

@@ -1,0 +1,60 @@
+#!/bin/zsh
+# Absolute path enforcement with cache purge
+
+# 1. Remove ALL potential preview directories and build artifacts
+rm -rf "{Preview,preview,FOMO_FINAL/Preview,FOMO_FINAL/preview,FOMO_FINAL/Preview Content,FOMO_FINAL.xcodeproj,Content}"
+rm -rf ~/Library/Developer/Xcode/DerivedData/*
+defaults delete com.apple.dt.Xcode
+
+# 2. Create canonical directory structure
+mkdir -p "FOMO_FINAL/FOMO_FINAL/Preview Content"
+touch "FOMO_FINAL/FOMO_FINAL/Preview Content/.keep"
+
+# 3. Update project.yml with absolute paths
+cat << YAML > project.yml
+name: FOMO_FINAL
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: 14.0
+targets:
+  FOMO_FINAL:
+    type: application
+    platform: iOS
+    sources:
+      - path: FOMO_FINAL
+        excludes:
+          - "Resources/copy_resources.sh"
+    settings:
+      base:
+        DEVELOPMENT_ASSET_PATHS: "Preview Content"
+        ENABLE_PREVIEWS: YES
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW]
+        DEVELOPMENT_TEAM: YOUR_TEAM_ID
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINAL
+    dependencies:
+      - sdk: SwiftUI.framework
+      - sdk: Combine.framework
+    info:
+      path: FOMO_FINAL/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+YAML
+
+# 4. Regenerate project
+xcodegen generate --spec project.yml
+
+# 5. Validate paths
+./scripts/verify_preview_paths.sh
+./scripts/validate_xcode_integration.sh
+
+# 6. Final build test
+xcodebuild clean build \
+    -project FOMO_FINAL.xcodeproj \
+    -scheme FOMO_FINAL \
+    -destination "platform=iOS Simulator,name=FOMO Test iPhone" \
+    DEVELOPMENT_ASSET_PATHS="Preview Content" 

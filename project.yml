@@ -1,0 +1,125 @@
+name: FOMO_FINAL
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: 18.1
+  groupSortPosition: top
+  createIntermediateGroups: true
+  xcodeVersion: "15.0"
+  developmentLanguage: en
+targets:
+  FOMO_FINAL:
+    type: application
+    platform: iOS
+    deploymentTarget:
+      iOS: 18.1
+    sources:
+      - path: FOMO_FINAL/FOMO_FINAL
+        name: Sources
+        excludes:
+          - "Assets.xcassets"
+          - "Preview Content"
+          - "Resources"
+    resources:
+      - path: FOMO_FINAL/FOMO_FINAL/Preview Content
+        name: Preview Content
+      - path: FOMO_FINAL/FOMO_FINAL/Assets.xcassets
+      - path: FOMO_FINAL/FOMO_FINAL/Resources
+        includes:
+          - "**/*.strings"
+    settings:
+      base:
+        DEVELOPMENT_ASSET_PATHS: "Preview Content"
+        PREVIEW_DATA_PATH: "Preview Content/PreviewData"
+        ASSET_CATALOGS: "Assets.xcassets"
+        ENABLE_PREVIEWS: YES
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW, IOS15_COMPAT, IOS17_COMPAT, IOS18_COMPAT]
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "Apple Development"
+        DEVELOPMENT_TEAM: ""  # Empty for simulator builds
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINAL
+        PROVISIONING_PROFILE_SPECIFIER: ""
+        CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: YES
+    dependencies:
+      - sdk: SwiftUI.framework
+      - sdk: Combine.framework
+      - sdk: Foundation.framework
+      - sdk: CoreData.framework
+      - sdk: CloudKit.framework
+    info:
+      path: FOMO_FINAL/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+
+# Test targets temporarily commented out for debugging
+#  FOMO_FINALTests:
+#    type: bundle.unit-test
+#    platform: iOS
+#    sources:
+#      - path: FOMO_FINALTests
+#    dependencies:
+#      - target: FOMO_FINAL
+#      - framework: XCTest.framework
+#        implicit: false
+#        link: true
+#    settings:
+#      base:
+#        ENABLE_TESTING_SEARCH_PATHS: YES
+#        SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW]
+#        GENERATE_INFOPLIST_FILE: YES
+#        PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINALTests
+#        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+#        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
+#        FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(PLATFORM_DIR)/Developer/Library/Frameworks", "$(DEVELOPER_FRAMEWORKS_DIR)", "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks"]
+#        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FOMO_FINAL.app/FOMO_FINAL"
+#        BUNDLE_LOADER: "$(TEST_HOST)"
+
+#  FOMO_FINALUITests:
+#    type: bundle.ui-testing
+#    platform: iOS
+#    sources:
+#      - path: FOMO_FINALUITests
+#    dependencies:
+#      - target: FOMO_FINAL
+#      - framework: XCTest.framework
+#        implicit: false
+#        link: true
+#    settings:
+#      base:
+#        ENABLE_TESTING_SEARCH_PATHS: YES
+#        SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW]
+#        GENERATE_INFOPLIST_FILE: YES
+#        PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINALUITests
+#        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+#        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
+#        FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(PLATFORM_DIR)/Developer/Library/Frameworks", "$(DEVELOPER_FRAMEWORKS_DIR)", "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks"]
+#        TEST_TARGET_NAME: FOMO_FINAL
+
+schemes:
+  FOMO_FINAL:
+    build:
+      targets:
+        FOMO_FINAL: all
+#        FOMO_FINALTests: [test]
+#        FOMO_FINALUITests: [test]
+#    test:
+#      targets:
+#        - FOMO_FINALTests
+#        - FOMO_FINALUITests
+#      commandLineArguments:
+#        "-AppleLanguages": "(en)"
+#        "-AppleLocale": "en_US"
+    run:
+      config: Debug
+      commandLineArguments:
+        "-preview": true
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

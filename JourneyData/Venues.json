@@ -1,0 +1,17 @@
+[
+  {
+    "id": "v_nyc_001",
+    "name": "Manhattan Lounge",
+    "description": "Premium nightlife experience in the heart of NYC",
+    "capacity": 150,
+    "image": "venue_nyc",
+    "tiers": ["VIP", "General"],
+    "location": {
+      "address": "123 Broadway",
+      "city": "New York",
+      "state": "NY"
+    },
+    "currentCapacity": 85,
+    "waitTime": "45 minutes"
+  }
+] 

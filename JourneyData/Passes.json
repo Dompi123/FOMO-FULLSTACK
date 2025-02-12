@@ -1,0 +1,13 @@
+[
+  {
+    "id": "p_vip_2024",
+    "venueId": "v_nyc_001",
+    "type": "VIP",
+    "expiry": "2024-12-31",
+    "benefits": ["Premium Access", "VIP Lounge"],
+    "status": "active",
+    "purchaseDate": "2024-02-06T00:00:00Z",
+    "qrCode": "mock_qr_data",
+    "validationKey": "mock_validation_key"
+  }
+] 

@@ -1,0 +1,6 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project FOMO_FINAL.xcodeproj -scheme FOMO_FINAL -destination "platform=iOS Simulator,name=FOMO Preview" clean build
+
+User defaults from command line:
+    IDEPackageSupportUseBuiltinSCM = YES
+

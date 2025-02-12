@@ -1,0 +1,16 @@
+{
+  "userId": "journey_user_1",
+  "name": "Journey Tester",
+  "email": "tester@fomo.app",
+  "tier": "Gold",
+  "preferences": {
+    "notifications": true,
+    "emailUpdates": true,
+    "theme": "system"
+  },
+  "stats": {
+    "totalPasses": 5,
+    "activePasses": 2,
+    "favoriteVenues": ["v_nyc_001"]
+  }
+} 
