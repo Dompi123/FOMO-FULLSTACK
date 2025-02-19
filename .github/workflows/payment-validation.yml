@@ -1,12 +1,41 @@
-name: Payment Flow Validation
+name: Payment Validation
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
-    paths:
-      - 'FOMO_FINAL/Payment/**'
-      - 'FOMO_FINALTests/Payment/**'
+    branches: [ main ]
 
 jobs:
+  validate:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up secure environment
+      run: |
+        security create-keychain -p "" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "" build.keychain
+    
+    - name: Configure environment
+      env:
+        SECURE_CONFIG: ${{ secrets.SECURE_CONFIG }}
+      run: |
+        echo "$SECURE_CONFIG" | base64 --decode > config.enc
+        gpg --quiet --batch --yes --decrypt --passphrase="$SECURE_PASSPHRASE" \
+          --output .env config.enc
+    
+    - name: Run validation tests
+      run: |
+        source .env
+        xcodebuild test \
+          -scheme FOMO_FINAL \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          -only-testing:FOMO_FINALTests/PaymentValidationTests
+      env:
+        SECURE_PASSPHRASE: ${{ secrets.SECURE_PASSPHRASE }}
+
   payment-security:
     runs-on: macOS-latest
     steps:

@@ -2,7 +2,11 @@ name: FOMO_FINAL
 options:
   bundleIdPrefix: com.example
   deploymentTarget:
-    iOS: 18.1
+    iOS: 17.0
+  compatibilityVersion:
+    iOS: 18.2
+  minimumCompatibilityVersion:
+    iOS: 17.0
   groupSortPosition: top
   createIntermediateGroups: true
   xcodeVersion: "15.0"
@@ -12,7 +16,9 @@ targets:
     type: application
     platform: iOS
     deploymentTarget:
-      iOS: 18.1
+      iOS: 17.0
+    compatibilityVersion:
+      iOS: 18.2
     sources:
       - path: FOMO_FINAL/FOMO_FINAL
         name: Sources
@@ -34,9 +40,9 @@ targets:
         ASSET_CATALOGS: "Assets.xcassets"
         ENABLE_PREVIEWS: YES
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW, IOS15_COMPAT, IOS17_COMPAT, IOS18_COMPAT]
-        CODE_SIGN_STYLE: Automatic
-        CODE_SIGN_IDENTITY: "Apple Development"
-        DEVELOPMENT_TEAM: ""  # Empty for simulator builds
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: ""
+        DEVELOPMENT_TEAM: "$(uuidgen)"
         PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINAL
         PROVISIONING_PROFILE_SPECIFIER: ""
         CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: YES
@@ -55,64 +61,41 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
 
-# Test targets temporarily commented out for debugging
-#  FOMO_FINALTests:
-#    type: bundle.unit-test
-#    platform: iOS
-#    sources:
-#      - path: FOMO_FINALTests
-#    dependencies:
-#      - target: FOMO_FINAL
-#      - framework: XCTest.framework
-#        implicit: false
-#        link: true
-#    settings:
-#      base:
-#        ENABLE_TESTING_SEARCH_PATHS: YES
-#        SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW]
-#        GENERATE_INFOPLIST_FILE: YES
-#        PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINALTests
-#        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
-#        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
-#        FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(PLATFORM_DIR)/Developer/Library/Frameworks", "$(DEVELOPER_FRAMEWORKS_DIR)", "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks"]
-#        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FOMO_FINAL.app/FOMO_FINAL"
-#        BUNDLE_LOADER: "$(TEST_HOST)"
-
-#  FOMO_FINALUITests:
-#    type: bundle.ui-testing
-#    platform: iOS
-#    sources:
-#      - path: FOMO_FINALUITests
-#    dependencies:
-#      - target: FOMO_FINAL
-#      - framework: XCTest.framework
-#        implicit: false
-#        link: true
-#    settings:
-#      base:
-#        ENABLE_TESTING_SEARCH_PATHS: YES
-#        SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW]
-#        GENERATE_INFOPLIST_FILE: YES
-#        PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINALUITests
-#        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
-#        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]
-#        FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(PLATFORM_DIR)/Developer/Library/Frameworks", "$(DEVELOPER_FRAMEWORKS_DIR)", "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks"]
-#        TEST_TARGET_NAME: FOMO_FINAL
+  FOMO_FINALTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget:
+      iOS: 18.2
+    sources:
+      - path: FOMO_FINALTests
+    dependencies:
+      - target: FOMO_FINAL
+      - framework: XCTest.framework
+    settings:
+      base:
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW]
+        ENABLE_TESTING_SEARCH_PATHS: YES
+        GENERATE_INFOPLIST_FILE: YES
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FOMO_FINAL.app/FOMO_FINAL"
 
 schemes:
   FOMO_FINAL:
     build:
       targets:
         FOMO_FINAL: all
-#        FOMO_FINALTests: [test]
-#        FOMO_FINALUITests: [test]
-#    test:
-#      targets:
-#        - FOMO_FINALTests
-#        - FOMO_FINALUITests
-#      commandLineArguments:
-#        "-AppleLanguages": "(en)"
-#        "-AppleLocale": "en_US"
+        FOMO_FINALTests: [test]
+    test:
+      targets:
+        - name: FOMO_FINALTests
+          parallelizable: true
+          randomExecutionOrder: true
+      commandLineArguments:
+        "-AppleLanguages": "(en)"
+        "-AppleLocale": "en_US"
+      environmentVariables:
+        SWIFT_DETERMINISTIC_HASHING: YES
     run:
       config: Debug
       commandLineArguments:

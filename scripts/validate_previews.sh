@@ -41,7 +41,7 @@ for file in "${PREVIEW_FILES[@]}"; do
 done
 
 # Verify PreviewDataLoader
-PREVIEW_LOADER="${PROJECT_DIR}/Preview/PreviewDataLoader.swift"
+PREVIEW_LOADER="${PROJECT_DIR}/Core/Preview/PreviewDataLoader.swift"
 if [ ! -f "$PREVIEW_LOADER" ]; then
     echo "❌ Missing PreviewDataLoader.swift"
     exit 1

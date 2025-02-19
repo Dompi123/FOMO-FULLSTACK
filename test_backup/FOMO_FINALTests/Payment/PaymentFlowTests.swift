@@ -1,7 +1,36 @@
 import XCTest
 @testable import FOMO_FINAL
 
-final class PaymentFlowTests: XCTestCase {
+class PaymentFlowTests: XCTestCase {
+    var sut: PaymentManager!
+    
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        let config = PaymentConfig(
+            baseURL: "https://api.test.fomo.com",
+            environment: .testing
+        )
+        sut = PaymentManager(config: config)
+    }
+    
+    override func tearDownWithError() throws {
+        sut = nil
+        try super.tearDownWithError()
+    }
+    
+    func testPaymentFlow() async throws {
+        // Given
+        let amount = Decimal(29.99)
+        let tier = PricingTier.mockTiers()[0]
+        
+        // When
+        let result = try await sut.processPayment(amount: amount, tier: tier)
+        
+        // Then
+        XCTAssertNotNil(result.transactionId)
+        XCTAssertEqual(result.amount, amount)
+    }
+    
     // Critical Path Test
     func testLiveTokenizationSuccess() async {
         let service = LiveTokenizationService()

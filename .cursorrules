@@ -1,0 +1,192 @@
+# FOMO App Cursor Rules
+
+# API Configuration
+api:
+  providers:
+    perplexity:
+      apiKey: "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"
+      model: "sonar-pro"
+      maxTokens: 8000
+    gemini:
+      apiKey: "AIzaSyD5r4x-VX2hwQPPa37HbSEtnmUHzLXkTyw"
+      model: "gemini-2.0-pro-exp-02-05"
+      maxTokens: 10000
+
+# Project Structure Rules
+structure:
+  required_dirs:
+    - FOMO_FINAL/FOMO_FINAL/App
+    - FOMO_FINAL/FOMO_FINAL/Features/Venues
+    - FOMO_FINAL/FOMO_FINAL/Features/Drinks
+    - FOMO_FINAL/FOMO_FINAL/Features/Passes
+    - FOMO_FINAL/FOMO_FINAL/Features/Profile
+    - FOMO_FINAL/FOMO_FINAL/Core/Navigation
+    - FOMO_FINAL/FOMO_FINAL/Core/Network
+    - FOMO_FINAL/FOMO_FINAL/Core/Storage
+    - FOMO_FINAL/FOMO_FINAL/Core/Payment
+    - FOMO_FINAL/FOMO_FINAL/Preview Content
+
+# File Pattern Rules
+patterns:
+  views: "**/Views/**/*.swift"
+  viewmodels: "**/ViewModels/**/*.swift"
+  models: "**/Models/**/*.swift"
+  tests: "FOMO_FINALTests/**/*.swift"
+
+# Swift Rules
+swift:
+  required_imports:
+    - SwiftUI
+    - Foundation
+  preview_rules:
+    - "#if DEBUG"
+    - "PreviewProvider"
+  architecture_rules:
+    - "@MainActor for ViewModels"
+    - "ObservableObject conformance"
+    - "Proper property wrappers"
+
+# Build Configuration
+build:
+  deployment_target: "18.1"
+  swift_version: "5.9"
+  preview_device: "iPhone 15"
+  compatibility_modes:
+    - "IOS17_COMPAT"
+    - "IOS18_COMPAT"
+
+# Validation Scripts
+validation:
+  pre_integration:
+    - "./scripts/validate_all.sh"
+    - "./scripts/validate_paywall.sh"
+  post_integration:
+    - "./scripts/nuclear_reset.sh"
+    - "./scripts/final_validation.sh"
+
+# Preview Requirements
+preview:
+  required_files:
+    - "PreviewData/sample_drinks.json"
+    - "Assets/test_assets.xcassets"
+  required_mocks:
+    - "MockTokenizationService"
+    - "PreviewDataLoader"
+
+# Security Rules
+security:
+  required_patterns:
+    - "Keychain storage for tokens"
+    - "Secure payment handling"
+    - "API key protection"
+
+# FOMO App Security Rules Configuration
+
+# Security Scanning Rules
+security:
+  # API and Authentication
+  api_security:
+    - pattern: "API_KEY|SECRET_KEY|ACCESS_TOKEN"
+      severity: critical
+      message: "Potential hardcoded credentials detected"
+    - pattern: "http://"
+      severity: warning
+      message: "Non-secure HTTP usage detected"
+  
+  # Data Storage
+  storage_security:
+    - pattern: "UserDefaults"
+      severity: warning
+      message: "Consider using Keychain for sensitive data"
+    - pattern: "print\\(.*password.*\\)"
+      severity: critical
+      message: "Password logging detected"
+  
+  # Payment Processing
+  payment_security:
+    - pattern: "CreditCard|card_number"
+      severity: critical
+      message: "Direct credit card handling detected"
+    - pattern: "PaymentToken"
+      required: true
+      severity: warning
+      message: "Payment tokenization check"
+
+# Code Quality Rules
+quality:
+  swift_patterns:
+    - pattern: "@MainActor"
+      required: true
+      severity: warning
+      message: "ViewModels should use @MainActor"
+    - pattern: "ObservableObject"
+      required: true
+      severity: warning
+      message: "ViewModels should conform to ObservableObject"
+
+# Preview Content Rules
+preview_security:
+  patterns:
+    - pattern: "PreviewProvider"
+      required: true
+      severity: info
+      message: "Preview implementation check"
+    - pattern: "static var previews"
+      required: true
+      severity: info
+      message: "Preview property check"
+
+# Dependency Rules
+dependencies:
+  forbidden_imports:
+    - pattern: "import UIKit"
+      severity: warning
+      message: "Direct UIKit usage detected, prefer SwiftUI"
+    - pattern: "import CoreData"
+      severity: info
+      message: "CoreData usage detected, ensure proper configuration"
+
+# File Structure Rules
+structure:
+  required_files:
+    - pattern: "FOMO_FINAL/FOMO_FINAL/Preview Content/PreviewData/.*\\.json"
+      severity: warning
+      message: "Preview data files check"
+    - pattern: "FOMO_FINAL/FOMO_FINAL/Core/Security/.*\\.swift"
+      severity: warning
+      message: "Security implementation check"
+
+# Build Configuration Rules
+build:
+  required_settings:
+    - pattern: "ENABLE_PREVIEWS.*YES"
+      severity: warning
+      message: "Preview support check"
+    - pattern: "SWIFT_ACTIVE_COMPILATION_CONDITIONS.*DEBUG"
+      severity: info
+      message: "Debug configuration check"
+
+# Documentation Rules
+documentation:
+  required_patterns:
+    - pattern: "// MARK: - "
+      severity: info
+      message: "Section marking check"
+    - pattern: "/\\*\\*.*\\*/"
+      severity: info
+      message: "Documentation comment check"
+
+# AI Configuration
+ai:
+  providers:
+    perplexity:
+      model: "sonar-pro"
+      maxTokens: 8000
+      apiKey: "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"
+    gemini:
+      model: "gemini-2.0-pro-exp-02-05"
+      maxTokens: 10000
+      apiKey: "AIzaSyD5r4x-VX2hwQPPa37HbSEtnmUHzLXkTyw"
+  defaults:
+    model: gemini-2.0
+    save_path: "FOMO_FINAL/Docs" 

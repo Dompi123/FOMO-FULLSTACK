@@ -31,15 +31,15 @@ verify_project_config() {
     if [ ! -f "project.yml" ]; then
         echo "❌ Error: project.yml not found"
         exit 1
-    }
+    fi
 
-    REQUIRED_SETTINGS=(
+    SETTINGS_TO_CHECK=(
         "DEVELOPMENT_ASSET_PATHS.*Preview Content"
         "PREVIEW_DATA_PATH.*PreviewData"
         "ASSET_CATALOGS.*Assets"
     )
 
-    for setting in "${REQUIRED_SETTINGS[@]}"; do
+    for setting in "${SETTINGS_TO_CHECK[@]}"; do
         if ! grep -q "$setting" "project.yml"; then
             echo "❌ Error: Missing required setting: $setting"
             exit 1
