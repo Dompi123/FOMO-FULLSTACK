@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'FOMO_FINAL/Features/**'
-      - 'FOMO_FINAL/*.xcodeproj/**'
-      - 'FOMO_FINAL/*.xcworkspace/**'
+      - 'FOMO_PRODUCTION/**'
+      - 'FOMO_PRODUCTION/*.xcodeproj/**'
+      - 'FOMO_PRODUCTION/*.xcworkspace/**'
 
 jobs:
   deploy:
@@ -26,6 +26,9 @@ jobs:
         with:
           xcode-version: latest-stable
           
+      - name: Install SwiftLint
+        run: brew install swiftlint
+          
       - name: Run Quality Agent
         run: |
           chmod +x ./automation/scripts/agent_daemon.sh
@@ -33,16 +36,16 @@ jobs:
         
       - name: Build Archive
         run: |
-          xcodebuild -project FOMO_FINAL/FOMO.xcodeproj \
-            -scheme FOMO \
+          xcodebuild -project FOMO_PRODUCTION/FOMO_PRODUCTION.xcodeproj \
+            -scheme FOMO_PRODUCTION \
             -configuration Release \
-            -archivePath FOMO_FINAL/FOMO.xcarchive \
+            -archivePath FOMO_PRODUCTION/FOMO_PRODUCTION.xcarchive \
             clean archive
             
       - name: Deploy to TestFlight
         uses: apple-actions/upload-testflight-build@v1
         with:
-          app-path: FOMO_FINAL/FOMO.xcarchive
+          app-path: FOMO_PRODUCTION/FOMO_PRODUCTION.xcarchive
           api-key: ${{ secrets.APP_STORE_KEY }}
           
       - name: Notify on Failure
@@ -56,66 +59,3 @@ jobs:
               title: '🚨 Deployment Failed',
               body: `Deployment failed in workflow run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             })
-
-
-
-
-
-name: FOMO Auto-Deploy
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'FOMO_FINAL/Features/**'
-      - 'FOMO_FINAL/*.xcodeproj/**'
-      - 'FOMO_FINAL/*.xcworkspace/**'
-
-jobs:
-  deploy:
-    runs-on: macos-latest
-    
-    env:
-      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
-      
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-          
-      - name: Run Quality Agent
-        run: |
-          chmod +x ./automation/scripts/agent_daemon.sh
-          ./automation/scripts/agent_daemon.sh --ci
-        
-      - name: Build Archive
-        run: |
-          xcodebuild -project FOMO_FINAL/FOMO.xcodeproj \
-            -scheme FOMO \
-            -configuration Release \
-            -archivePath FOMO_FINAL/FOMO.xcarchive \
-            clean archive
-            
-      - name: Deploy to TestFlight
-        uses: apple-actions/upload-testflight-build@v1
-        with:
-          app-path: FOMO_FINAL/FOMO.xcarchive
-          api-key: ${{ secrets.APP_STORE_KEY }}
-          
-      - name: Notify on Failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '🚨 Deployment Failed',
-              body: `Deployment failed in workflow run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
-            })[PASTE THE ENTIRE YAML CONTENT FROM PREVIOUS MESSAGE]
