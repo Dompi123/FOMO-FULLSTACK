@@ -1,0 +1,254 @@
+[
+  {
+    "path": "/venues",
+    "method": "GET",
+    "operationId": "getAllVenues",
+    "tags": ["Venues"]
+  },
+  {
+    "path": "/venues/{id}",
+    "method": "GET",
+    "operationId": "getVenueDetails",
+    "tags": ["Venues"]
+  },
+  {
+    "path": "/venues/{id}/drinks",
+    "method": "GET",
+    "operationId": "getVenueDrinks",
+    "tags": ["Venues", "Drinks"]
+  },
+  {
+    "path": "/venues/{id}/passes",
+    "method": "POST",
+    "operationId": "purchaseVenuePass",
+    "tags": ["Venues", "Passes"]
+  },
+  {
+    "path": "/venues/{id}/capacity",
+    "method": "GET",
+    "operationId": "getVenueCapacity",
+    "tags": ["Venues"]
+  },
+  {
+    "path": "/venues/search",
+    "method": "GET",
+    "operationId": "searchVenues",
+    "tags": ["Venues"]
+  },
+  {
+    "path": "/venues/{id}/events",
+    "method": "GET",
+    "operationId": "getVenueEvents",
+    "tags": ["Venues", "Events"]
+  },
+  {
+    "path": "/venues/{id}/reviews",
+    "method": "GET",
+    "operationId": "getVenueReviews",
+    "tags": ["Venues", "Reviews"]
+  },
+  {
+    "path": "/venues/{id}/reviews",
+    "method": "POST",
+    "operationId": "postVenueReview",
+    "tags": ["Venues", "Reviews"]
+  },
+  {
+    "path": "/venues/{id}/favorites",
+    "method": "POST",
+    "operationId": "favoriteVenue",
+    "tags": ["Venues", "Favorites"]
+  },
+  {
+    "path": "/drinks",
+    "method": "GET",
+    "operationId": "getAllDrinks",
+    "tags": ["Drinks"]
+  },
+  {
+    "path": "/drinks/{id}",
+    "method": "GET",
+    "operationId": "getDrinkDetails",
+    "tags": ["Drinks"]
+  },
+  {
+    "path": "/drinks/featured",
+    "method": "GET",
+    "operationId": "getFeaturedDrinks",
+    "tags": ["Drinks"]
+  },
+  {
+    "path": "/drinks/search",
+    "method": "GET",
+    "operationId": "searchDrinks",
+    "tags": ["Drinks"]
+  },
+  {
+    "path": "/drinks/{id}/reviews",
+    "method": "GET",
+    "operationId": "getDrinkReviews",
+    "tags": ["Drinks", "Reviews"]
+  },
+  {
+    "path": "/drinks/{id}/reviews",
+    "method": "POST",
+    "operationId": "postDrinkReview",
+    "tags": ["Drinks", "Reviews"]
+  },
+  {
+    "path": "/drinks/{id}/favorites",
+    "method": "POST",
+    "operationId": "favoriteDrink",
+    "tags": ["Drinks", "Favorites"]
+  },
+  {
+    "path": "/drinks/categories",
+    "method": "GET",
+    "operationId": "getDrinkCategories",
+    "tags": ["Drinks"]
+  },
+  {
+    "path": "/passes",
+    "method": "GET",
+    "operationId": "getAllPasses",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/passes/{id}",
+    "method": "GET",
+    "operationId": "getPassDetails",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/passes/purchase",
+    "method": "POST",
+    "operationId": "purchasePass",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/passes/{id}/validate",
+    "method": "POST",
+    "operationId": "validatePass",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/passes/{id}/cancel",
+    "method": "POST",
+    "operationId": "cancelPass",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/passes/history",
+    "method": "GET",
+    "operationId": "getPassHistory",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/passes/active",
+    "method": "GET",
+    "operationId": "getActivePasses",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/passes/upcoming",
+    "method": "GET",
+    "operationId": "getUpcomingPasses",
+    "tags": ["Passes"]
+  },
+  {
+    "path": "/profile",
+    "method": "GET",
+    "operationId": "getProfile",
+    "tags": ["Profile"]
+  },
+  {
+    "path": "/profile",
+    "method": "PUT",
+    "operationId": "updateProfile",
+    "tags": ["Profile"]
+  },
+  {
+    "path": "/profile/favorites",
+    "method": "GET",
+    "operationId": "getProfileFavorites",
+    "tags": ["Profile", "Favorites"]
+  },
+  {
+    "path": "/profile/passes",
+    "method": "GET",
+    "operationId": "getProfilePasses",
+    "tags": ["Profile", "Passes"]
+  },
+  {
+    "path": "/profile/payments",
+    "method": "GET",
+    "operationId": "getProfilePayments",
+    "tags": ["Profile", "Payments"]
+  },
+  {
+    "path": "/profile/notifications",
+    "method": "GET",
+    "operationId": "getProfileNotifications",
+    "tags": ["Profile", "Notifications"]
+  },
+  {
+    "path": "/profile/notifications",
+    "method": "PUT",
+    "operationId": "updateProfileNotifications",
+    "tags": ["Profile", "Notifications"]
+  },
+  {
+    "path": "/profile/settings",
+    "method": "GET",
+    "operationId": "getProfileSettings",
+    "tags": ["Profile", "Settings"]
+  },
+  {
+    "path": "/orders",
+    "method": "GET",
+    "operationId": "getAllOrders",
+    "tags": ["Orders"]
+  },
+  {
+    "path": "/orders/{id}",
+    "method": "GET",
+    "operationId": "getOrderDetails",
+    "tags": ["Orders"]
+  },
+  {
+    "path": "/orders/create",
+    "method": "POST",
+    "operationId": "createOrder",
+    "tags": ["Orders"]
+  },
+  {
+    "path": "/orders/{id}/cancel",
+    "method": "POST",
+    "operationId": "cancelOrder",
+    "tags": ["Orders"]
+  },
+  {
+    "path": "/orders/history",
+    "method": "GET",
+    "operationId": "getOrderHistory",
+    "tags": ["Orders"]
+  },
+  {
+    "path": "/orders/active",
+    "method": "GET",
+    "operationId": "getActiveOrders",
+    "tags": ["Orders"]
+  },
+  {
+    "path": "/orders/upcoming",
+    "method": "GET",
+    "operationId": "getUpcomingOrders",
+    "tags": ["Orders"]
+  },
+  {
+    "path": "/orders/{id}/receipt",
+    "method": "GET",
+    "operationId": "getOrderReceipt",
+    "tags": ["Orders"]
+  }
+] 

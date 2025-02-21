@@ -1,0 +1,40 @@
+{
+    "test_cards": [
+        {
+            "type": "visa",
+            "number": "4242424242424242",
+            "expiry": "12/25",
+            "cvc": "123"
+        },
+        {
+            "type": "mastercard",
+            "number": "5555555555554444",
+            "expiry": "12/25",
+            "cvc": "123"
+        }
+    ],
+    "test_amounts": [
+        {
+            "amount": 1000,
+            "currency": "USD",
+            "description": "VIP Pass"
+        },
+        {
+            "amount": 2000,
+            "currency": "USD",
+            "description": "Premium Pass"
+        }
+    ],
+    "validation_messages": {
+        "success": [
+            "Payment processed successfully",
+            "Card verified",
+            "Transaction complete"
+        ],
+        "error": [
+            "Please check card details",
+            "Invalid card number",
+            "Card expired"
+        ]
+    }
+} 

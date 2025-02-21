@@ -1,0 +1,13 @@
+git_url("https://github.com/Dompi123/FOMO-FULLSTACK")
+storage_mode("git")
+type("appstore")
+app_identifier("com.fomoapp.production")
+
+# Use API key authentication
+api_key_path("fastlane/apple_api_key.json")
+
+git_branch("main")
+readonly(true)
+
+# For all available options run `fastlane match --help`
+# The docs are available on https://docs.fastlane.tools/actions/match/ 

@@ -1,0 +1,45 @@
+version: 1.0.0
+timestamp: 2024-02-14T00:00:00Z
+
+design_system:
+  name: "FOMO Design System"
+  version: "1.0.0"
+  status: "production"
+
+colors:
+  primary: "#4B0082"
+  secondary: "#000000"
+  background: "#1A1A1A"
+  checksum: "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+typography:
+  families:
+    - "SF Pro Rounded"
+    - "SF Pro Text"
+  checksum: "sha256:f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+layout:
+  grid_spacing: 16.0
+  corner_radius: 12.0
+  checksum: "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+
+animations:
+  button_press: 0.2
+  card_hover: 0.3
+  checksum: "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+
+security:
+  payment_components: "sealed"
+  theme_protection: "enabled"
+  checksum: "sha256:4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"
+
+dependencies:
+  swift_version: "5.9"
+  ios_version: "17.0"
+  checksum: "sha256:4b227777d4dd1fc61c6993d5acc2a13e735c9a132e163b6f9f92ee7e5bef9c5f"
+
+validation:
+  checklist_version: "1.0"
+  status: "passed"
+  timestamp: 2024-02-14T00:00:00Z
+  checksum: "sha256:ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d" 

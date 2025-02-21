@@ -1,0 +1,34 @@
+{
+    "venues": [
+        {
+            "id": "v_nyc_001",
+            "name": "Skyline Lounge",
+            "description": "Exclusive rooftop venue with panoramic city views",
+            "capacity": 200,
+            "image": "venue_skyline",
+            "tiers": ["VIP", "Premium", "General"],
+            "location": {
+                "address": "456 5th Avenue",
+                "city": "New York",
+                "state": "NY"
+            },
+            "currentCapacity": 150,
+            "waitTime": "60 minutes"
+        },
+        {
+            "id": "v_nyc_002",
+            "name": "Crystal Garden",
+            "description": "Modern nightclub featuring world-class DJs",
+            "capacity": 300,
+            "image": "venue_crystal",
+            "tiers": ["VVIP", "VIP", "General"],
+            "location": {
+                "address": "789 Madison Ave",
+                "city": "New York",
+                "state": "NY"
+            },
+            "currentCapacity": 220,
+            "waitTime": "90 minutes"
+        }
+    ]
+} 

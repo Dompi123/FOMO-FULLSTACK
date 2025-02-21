@@ -2,12 +2,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "fomofinal",
+    name: "FOMO-API-Contracts",
     platforms: [
-        .macOS(.v12),
-        .iOS(.v15)
+        .macOS(.v13),
+        .iOS(.v17)
     ],
-    products: [],
-    dependencies: [],
-    targets: []
+    products: [
+        .library(
+            name: "FOMOAPIContracts",
+            targets: ["FOMOAPIContracts"]
+        )
+    ],
+    targets: [
+        .target(
+            name: "FOMOAPIContracts",
+            path: "Sources/FOMOAPIContracts"
+        ),
+        .executableTarget(
+            name: "ContractGenerator",
+            path: "Sources/ContractGenerator"
+        )
+    ]
 ) 

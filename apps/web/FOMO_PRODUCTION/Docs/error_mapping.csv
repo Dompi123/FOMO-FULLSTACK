@@ -1,0 +1,8 @@
+Frontend Code,Backend Code,HTTP Status
+tokenizationFailed,PAYMENT_TOKEN_INVALID,402
+networkError,SERVICE_UNAVAILABLE,503
+validationError,INVALID_REQUEST_BODY,400
+rateLimitExceeded,RATE_LIMIT_EXCEEDED,429
+invalidCard,INVALID_CARD_DATA,400
+expiredCard,EXPIRED_CARD,400
+backendError,INTERNAL_SERVER_ERROR,500 

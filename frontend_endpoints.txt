@@ -1,0 +1,51 @@
+// Venues
+getAllVenues
+getVenueDetails(id: String)
+getVenueDrinks(venueId: String)
+purchaseVenuePass(venueId: String)
+getVenueCapacity(venueId: String)
+searchVenues(query: String)
+getVenueEvents(venueId: String)
+getVenueReviews(venueId: String)
+postVenueReview(venueId: String, review: ReviewData)
+favoriteVenue(venueId: String)
+
+// Drinks
+getAllDrinks
+getDrinkDetails(id: String)
+getFeaturedDrinks
+searchDrinks(query: String)
+getDrinkReviews(drinkId: String)
+postDrinkReview(drinkId: String, review: ReviewData)
+favoriteDrink(drinkId: String)
+getDrinkCategories
+
+// Passes
+getAllPasses
+getPassDetails(id: String)
+purchasePass
+validatePass(id: String)
+cancelPass(id: String)
+getPassHistory
+getActivePasses
+getUpcomingPasses
+
+// Profile
+getProfile
+updateProfile(profile: ProfileData)
+getProfileFavorites
+getProfilePasses
+getProfilePayments
+getProfileNotifications
+updateProfileNotifications(settings: NotificationSettings)
+getProfileSettings
+
+// Orders
+getAllOrders
+getOrderDetails(id: String)
+createOrder
+cancelOrder(id: String)
+getOrderHistory
+getActiveOrders
+getUpcomingOrders
+getOrderReceipt(id: String)

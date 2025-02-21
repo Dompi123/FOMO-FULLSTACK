@@ -1,0 +1,247 @@
+Contract Validation Report
+========================
+
+✅ Matched Endpoints (42):
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks [GET]
+    -> Operation: getAllDrinks
+    -> Tags: Drinks
+
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks/categories [GET]
+    -> Operation: getDrinkCategories
+    -> Tags: Drinks
+
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks/featured [GET]
+    -> Operation: getFeaturedDrinks
+    -> Tags: Drinks
+
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks/search [GET]
+    -> Operation: searchDrinks
+    -> Tags: Drinks
+
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks/{id} [GET]
+    -> Operation: getDrinkDetails
+    -> Tags: Drinks
+
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks/{id}/favorites [POST]
+    -> Operation: favoriteDrink
+    -> Tags: Drinks, Favorites
+
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks/{id}/reviews [GET]
+    -> Operation: getDrinkReviews
+    -> Tags: Drinks, Reviews
+
+  Frontend: getVenueDrinks(venueId: String)
+    -> Backend: /drinks/{id}/reviews [POST]
+    -> Operation: postDrinkReview
+    -> Tags: Drinks, Reviews
+
+  Frontend: getAllOrders
+    -> Backend: /orders [GET]
+    -> Operation: getAllOrders
+    -> Tags: Orders
+
+  Frontend: getActivePasses
+    -> Backend: /orders/active [GET]
+    -> Operation: getActiveOrders
+    -> Tags: Orders
+
+  Frontend: getAllOrders
+    -> Backend: /orders/create [POST]
+    -> Operation: createOrder
+    -> Tags: Orders
+
+  Frontend: getPassHistory
+    -> Backend: /orders/history [GET]
+    -> Operation: getOrderHistory
+    -> Tags: Orders
+
+  Frontend: getUpcomingPasses
+    -> Backend: /orders/upcoming [GET]
+    -> Operation: getUpcomingOrders
+    -> Tags: Orders
+
+  Frontend: getAllOrders
+    -> Backend: /orders/{id} [GET]
+    -> Operation: getOrderDetails
+    -> Tags: Orders
+
+  Frontend: cancelPass(id: String)
+    -> Backend: /orders/{id}/cancel [POST]
+    -> Operation: cancelOrder
+    -> Tags: Orders
+
+  Frontend: getAllOrders
+    -> Backend: /orders/{id}/receipt [GET]
+    -> Operation: getOrderReceipt
+    -> Tags: Orders
+
+  Frontend: getAllPasses
+    -> Backend: /passes [GET]
+    -> Operation: getAllPasses
+    -> Tags: Passes
+
+  Frontend: getAllPasses
+    -> Backend: /passes/active [GET]
+    -> Operation: getActivePasses
+    -> Tags: Passes
+
+  Frontend: getAllPasses
+    -> Backend: /passes/history [GET]
+    -> Operation: getPassHistory
+    -> Tags: Passes
+
+  Frontend: purchaseVenuePass(venueId: String)
+    -> Backend: /passes/purchase [POST]
+    -> Operation: purchasePass
+    -> Tags: Passes
+
+  Frontend: getAllPasses
+    -> Backend: /passes/upcoming [GET]
+    -> Operation: getUpcomingPasses
+    -> Tags: Passes
+
+  Frontend: getAllPasses
+    -> Backend: /passes/{id} [GET]
+    -> Operation: getPassDetails
+    -> Tags: Passes
+
+  Frontend: getAllPasses
+    -> Backend: /passes/{id}/cancel [POST]
+    -> Operation: cancelPass
+    -> Tags: Passes
+
+  Frontend: getAllPasses
+    -> Backend: /passes/{id}/validate [POST]
+    -> Operation: validatePass
+    -> Tags: Passes
+
+  Frontend: getProfile
+    -> Backend: /profile [GET]
+    -> Operation: getProfile
+    -> Tags: Profile
+
+  Frontend: getProfile
+    -> Backend: /profile [PUT]
+    -> Operation: updateProfile
+    -> Tags: Profile
+
+  Frontend: favoriteVenue(venueId: String)
+    -> Backend: /profile/favorites [GET]
+    -> Operation: getProfileFavorites
+    -> Tags: Profile, Favorites
+
+  Frontend: getProfile
+    -> Backend: /profile/notifications [GET]
+    -> Operation: getProfileNotifications
+    -> Tags: Profile, Notifications
+
+  Frontend: getProfile
+    -> Backend: /profile/notifications [PUT]
+    -> Operation: updateProfileNotifications
+    -> Tags: Profile, Notifications
+
+  Frontend: getAllPasses
+    -> Backend: /profile/passes [GET]
+    -> Operation: getProfilePasses
+    -> Tags: Profile, Passes
+
+  Frontend: getProfile
+    -> Backend: /profile/payments [GET]
+    -> Operation: getProfilePayments
+    -> Tags: Profile, Payments
+
+  Frontend: getProfile
+    -> Backend: /profile/settings [GET]
+    -> Operation: getProfileSettings
+    -> Tags: Profile, Settings
+
+  Frontend: getAllVenues
+    -> Backend: /venues [GET]
+    -> Operation: getAllVenues
+    -> Tags: Venues
+
+  Frontend: getAllVenues
+    -> Backend: /venues/search [GET]
+    -> Operation: searchVenues
+    -> Tags: Venues
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id} [GET]
+    -> Operation: getVenueDetails
+    -> Tags: Venues
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id}/capacity [GET]
+    -> Operation: getVenueCapacity
+    -> Tags: Venues
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id}/drinks [GET]
+    -> Operation: getVenueDrinks
+    -> Tags: Venues, Drinks
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id}/events [GET]
+    -> Operation: getVenueEvents
+    -> Tags: Venues, Events
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id}/favorites [POST]
+    -> Operation: favoriteVenue
+    -> Tags: Venues, Favorites
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id}/passes [POST]
+    -> Operation: purchaseVenuePass
+    -> Tags: Venues, Passes
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id}/reviews [GET]
+    -> Operation: getVenueReviews
+    -> Tags: Venues, Reviews
+
+  Frontend: getAllVenues
+    -> Backend: /venues/{id}/reviews [POST]
+    -> Operation: postVenueReview
+    -> Tags: Venues, Reviews
+
+
+⚠️ Unmatched Frontend Endpoints (31):
+  cancelOrder(id: String)
+  createOrder
+  favoriteDrink(drinkId: String)
+  getActiveOrders
+  getAllDrinks
+  getDrinkCategories
+  getDrinkDetails(id: String)
+  getDrinkReviews(drinkId: String)
+  getFeaturedDrinks
+  getOrderDetails(id: String)
+  getOrderHistory
+  getOrderReceipt(id: String)
+  getPassDetails(id: String)
+  getProfileFavorites
+  getProfileNotifications
+  getProfilePasses
+  getProfilePayments
+  getProfileSettings
+  getUpcomingOrders
+  getVenueCapacity(venueId: String)
+  getVenueDetails(id: String)
+  getVenueEvents(venueId: String)
+  getVenueReviews(venueId: String)
+  postDrinkReview(drinkId: String, review: ReviewData)
+  postVenueReview(venueId: String, review: ReviewData)
+  purchasePass
+  searchDrinks(query: String)
+  searchVenues(query: String)
+  updateProfile(profile: ProfileData)
+  updateProfileNotifications(settings: NotificationSettings)
+  validatePass(id: String)

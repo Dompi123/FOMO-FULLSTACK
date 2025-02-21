@@ -1,0 +1,10 @@
+{
+    "id": "user_001",
+    "name": "John Smith",
+    "email": "john.smith@example.com",
+    "phoneNumber": "+1-555-123-4567",
+    "preferences": {
+        "notificationsEnabled": true,
+        "favoriteVenueIds": ["v_nyc_001"]
+    }
+} 

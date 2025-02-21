@@ -1,6 +1,6 @@
-name: FOMO_FINAL
+name: FOMO_PRODUCTION
 options:
-  bundleIdPrefix: com.example
+  bundleIdPrefix: com.fomoapp
   deploymentTarget:
     iOS: 17.0
   compatibilityVersion:
@@ -12,7 +12,7 @@ options:
   xcodeVersion: "15.0"
   developmentLanguage: en
 targets:
-  FOMO_FINAL:
+  FOMO_PRODUCTION:
     type: application
     platform: iOS
     deploymentTarget:
@@ -20,31 +20,32 @@ targets:
     compatibilityVersion:
       iOS: 18.2
     sources:
-      - path: FOMO_FINAL/FOMO_FINAL
+      - path: FOMO_PRODUCTION
         name: Sources
         excludes:
           - "Assets.xcassets"
           - "Preview Content"
           - "Resources"
+          - "FOMO_PRODUCTION_APP"
     resources:
-      - path: FOMO_FINAL/FOMO_FINAL/Preview Content
+      - path: FOMO_PRODUCTION/Preview Content
         name: Preview Content
-      - path: FOMO_FINAL/FOMO_FINAL/Assets.xcassets
-      - path: FOMO_FINAL/FOMO_FINAL/Resources
+        buildPhase: resources
+      - path: FOMO_PRODUCTION/Resources
         includes:
           - "**/*.strings"
+        buildPhase: resources
     settings:
       base:
-        DEVELOPMENT_ASSET_PATHS: "Preview Content"
-        PREVIEW_DATA_PATH: "Preview Content/PreviewData"
-        ASSET_CATALOGS: "Assets.xcassets"
+        DEVELOPMENT_ASSET_PATHS: ["FOMO_PRODUCTION/Preview Content"]
+        PREVIEW_DATA_PATH: "FOMO_PRODUCTION/Preview Content/PreviewData"
         ENABLE_PREVIEWS: YES
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: [DEBUG, PREVIEW, IOS15_COMPAT, IOS17_COMPAT, IOS18_COMPAT]
         CODE_SIGN_STYLE: Manual
-        CODE_SIGN_IDENTITY: ""
-        DEVELOPMENT_TEAM: "$(uuidgen)"
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.FOMO-FINAL
-        PROVISIONING_PROFILE_SPECIFIER: ""
+        CODE_SIGN_IDENTITY: "iPhone Distribution"
+        DEVELOPMENT_TEAM: "$(DEVELOPMENT_TEAM)"
+        PRODUCT_BUNDLE_IDENTIFIER: com.fomoapp.production
+        PROVISIONING_PROFILE_SPECIFIER: "match AppStore com.fomoapp.production"
         CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: YES
     dependencies:
       - sdk: SwiftUI.framework
@@ -53,7 +54,7 @@ targets:
       - sdk: CoreData.framework
       - sdk: CloudKit.framework
     info:
-      path: FOMO_FINAL/Info.plist
+      path: FOMO_PRODUCTION/Info.plist
       properties:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
@@ -61,15 +62,15 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
 
-  FOMO_FINALTests:
+  FOMO_PRODUCTIONTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget:
       iOS: 18.2
     sources:
-      - path: FOMO_FINALTests
+      - path: FOMO_PRODUCTIONTests
     dependencies:
-      - target: FOMO_FINAL
+      - target: FOMO_PRODUCTION
       - framework: XCTest.framework
     settings:
       base:
@@ -78,17 +79,17 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         BUNDLE_LOADER: "$(TEST_HOST)"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FOMO_FINAL.app/FOMO_FINAL"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FOMO_PRODUCTION.app/FOMO_PRODUCTION"
 
 schemes:
-  FOMO_FINAL:
+  FOMO_PRODUCTION:
     build:
       targets:
-        FOMO_FINAL: all
-        FOMO_FINALTests: [test]
+        FOMO_PRODUCTION: all
+        FOMO_PRODUCTIONTests: [test]
     test:
       targets:
-        - name: FOMO_FINALTests
+        - name: FOMO_PRODUCTIONTests
           parallelizable: true
           randomExecutionOrder: true
       commandLineArguments:

@@ -1,0 +1,12 @@
+user_preview:
+  simulator:
+    name: "FinalPreview"
+    os: "18.2"
+    device: "iPhone 16 Pro"
+    runtime: "iOS-18-2"
+  build:
+    scheme: "FOMO_PRODUCTION"
+    flags: ["FULL_PREVIEW=1", "UI_MODE=production", "MOCK_SCOPE=all"]
+  paths:
+    mock_data: "PreviewData/"
+    state: "PreviewState/"

@@ -1,0 +1,10 @@
+"payment.button.pay" = "Pay Now";
+"payment.button.processing" = "Processing...";
+"payment.button.success" = "Payment Complete";
+"payment.button.retry" = "Try Again";
+"payment.success" = "Payment successful!";
+"payment.error.generic" = "Something went wrong. Please try again.";
+"payment.error.invalid" = "Invalid payment method";
+"payment.error.insufficient" = "Insufficient funds";
+"payment.error.timeout" = "Payment request timed out";
+"payment.error.cancelled" = "Payment was cancelled"; 

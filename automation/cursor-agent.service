@@ -1,0 +1,27 @@
+[Unit]
+Description=FOMO Autonomous Cursor Agent
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=dom.khr
+WorkingDirectory=/Users/dom.khr/Desktop/fomofinal copy
+ExecStart=/Users/dom.khr/Desktop/fomofinal copy/automation/agent_daemon.sh
+Environment="VAULT_TOKEN=${VAULT_TOKEN}"
+Environment="AGENT_MODE=AUTONOMOUS"
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+# Security settings
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=read-only
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+
+[Install]
+WantedBy=multi-user.target 

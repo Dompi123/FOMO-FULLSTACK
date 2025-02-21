@@ -1,0 +1,24 @@
+{
+    "collaboration": {
+        "teamId": "FOMO_DEV_TEAM",
+        "realtimeEditing": true,
+        "sharedContext": {
+            "aiAgents": ["code-review", "conflict-resolution"],
+            "branchAwareness": true
+        }
+    },
+    "security": {
+        "encryptedStorage": true,
+        "auditLogging": true
+    },
+    "codeReview": {
+        "rules": "code_rules.md",
+        "autoAssign": true,
+        "requiredApprovals": 2
+    },
+    "environment": {
+        "shared": true,
+        "syncSettings": true,
+        "baseApiUrl": "https://api.fomo-app.com/v2"
+    }
+} 

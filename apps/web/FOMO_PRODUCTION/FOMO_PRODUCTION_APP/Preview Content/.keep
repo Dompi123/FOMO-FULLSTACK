@@ -1,0 +1,11 @@
+Preview Content Assets:
+
+1. PreviewData/
+   - sample_drinks.json (Drink menu and categories)
+
+2. Assets/test_assets.xcassets/
+   - drink_mojito.imageset/
+   - drink_martini.imageset/
+   - drink_wine.imageset/
+
+Note: PDF vector assets are used for high-quality scaling
