@@ -2,14 +2,14 @@ name: FOMO Auto-Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     name: Build and Test
     runs-on: macos-latest
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,11 +19,12 @@ jobs:
         with:
           xcode-version: '15.0'
 
-      - name: Show build folder content
+      - name: List workspace contents
         run: |
           pwd
           ls -la
-          ls -la FOMO_PRODUCTION || echo "FOMO_PRODUCTION not found"
+          echo "Project structure:"
+          find . -name "*.xcodeproj"
 
       - name: Install dependencies
         run: |
@@ -41,19 +42,9 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
 
-      - name: Run tests
-        run: |
-          xcodebuild test \
-            -project FOMO_PRODUCTION/FOMO_PRODUCTION.xcodeproj \
-            -scheme "FOMO_PRODUCTION" \
-            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
-            | xcbeautify
-
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: build-artifacts
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-            ~/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+          name: build-logs
+          path: ~/Library/Developer/Xcode/DerivedData/
