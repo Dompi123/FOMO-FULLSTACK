@@ -3,37 +3,57 @@ name: FOMO Auto-Deploy
 on:
   push:
     branches: [main]
-    paths:
-      - 'FOMO_PRODUCTION/**'
-      - 'FOMO_PRODUCTION/*.xcodeproj/**'
-      - 'FOMO_PRODUCTION/*.xcworkspace/**'
+  workflow_dispatch:
 
 jobs:
   build:
+    name: Build and Test
     runs-on: macos-latest
-    
-    env:
-      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Setup Xcode
+
+      - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
-          
-      - name: Install SwiftLint
-        run: brew install swiftlint
-          
-      - name: List files
-        run: ls -R FOMO_PRODUCTION
-        
-      - name: Build Archive
+          xcode-version: '15.0'
+
+      - name: Show build folder content
         run: |
-          xcodebuild -project FOMO_PRODUCTION/FOMO_PRODUCTION.xcodeproj \
-            -scheme FOMO_PRODUCTION \
-            -configuration Release \
-            -archivePath FOMO_PRODUCTION/FOMO_PRODUCTION.xcarchive \
-            clean archive
+          pwd
+          ls -la
+          ls -la FOMO_PRODUCTION || echo "FOMO_PRODUCTION not found"
+
+      - name: Install dependencies
+        run: |
+          brew install swiftlint
+          brew install xcbeautify
+
+      - name: Build project
+        run: |
+          xcodebuild clean build \
+            -project FOMO_PRODUCTION/FOMO_PRODUCTION.xcodeproj \
+            -scheme "FOMO_PRODUCTION" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify
+
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -project FOMO_PRODUCTION/FOMO_PRODUCTION.xcodeproj \
+            -scheme "FOMO_PRODUCTION" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
+            | xcbeautify
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            ~/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
