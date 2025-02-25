@@ -3,72 +3,189 @@ import OSLog
 
 struct DrinkMenuView: View {
     @StateObject private var viewModel = DrinkMenuViewModel()
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedDrinks: Set<String> = []
-    @State private var showCheckout = false
+    @State private var searchText = ""
     
     var body: some View {
-        NavigationView {
-            Group {
-                if viewModel.isLoading {
-                    ProgressView()
-                } else if let error = viewModel.error {
-                    Text(error.localizedDescription)
-                        .foregroundColor(.red)
-                } else if viewModel.menuItems.isEmpty {
-                    ContentUnavailableView("No Drinks Available",
-                        systemImage: "wineglass",
-                        description: Text("The drink menu is currently empty.")
-                    )
-                } else {
-                    List {
-                        ForEach(viewModel.menuItems) { drink in
-                            DrinkRowView(
-                                drink: drink,
-                                isSelected: selectedDrinks.contains(drink.id)
-                            ) {
-                                if selectedDrinks.contains(drink.id) {
-                                    selectedDrinks.remove(drink.id)
-                                } else {
-                                    selectedDrinks.insert(drink.id)
-                                }
-                            }
+        ScrollView {
+            VStack(spacing: 24) {
+                // Search bar
+                SearchBar(text: $searchText, placeholder: "What do you want to drink?")
+                    .padding(.horizontal)
+                
+                // Categories section
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Categories")
+                        .font(.headline)
+                        .padding(.horizontal)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            CategoryButton(
+                                icon: "arrow.clockwise",
+                                title: "Order Again",
+                                color: .blue
+                            )
+                            
+                            CategoryButton(
+                                icon: "wineglass",
+                                title: "Signatures",
+                                color: .red
+                            )
+                            
+                            CategoryButton(
+                                icon: "bottle",
+                                title: "Bottled Beer",
+                                color: .orange
+                            )
                         }
+                        .padding(.horizontal)
                     }
-                }
-            }
-            .navigationTitle("Drink Menu")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
                 }
                 
-                if !selectedDrinks.isEmpty {
-                    ToolbarItem(placement: .bottomBar) {
-                        Button("Checkout (\(selectedDrinks.count))") {
-                            let items = viewModel.menuItems
-                                .filter { selectedDrinks.contains($0.id) }
-                                .map { DrinkOrderItem(drink: $0) }
-                            viewModel.createOrder(items: items)
-                            showCheckout = true
+                // Order Again section
+                if !viewModel.recentDrinks.isEmpty {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Order Again")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(viewModel.recentDrinks) { drink in
+                                    DrinkCard(drink: drink)
+                                }
+                            }
+                            .padding(.horizontal)
                         }
-                        .buttonStyle(.borderedProminent)
+                    }
+                }
+                
+                // Featured drinks
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Signatures")
+                        .font(.headline)
+                        .padding(.horizontal)
+                    
+                    LazyVStack(spacing: 16) {
+                        ForEach(viewModel.signatureDrinks) { drink in
+                            DrinkRow(drink: drink)
+                                .padding(.horizontal)
+                        }
                     }
                 }
             }
-            .sheet(isPresented: $showCheckout) {
-                if let order = viewModel.currentOrder {
-                    CheckoutView(order: order)
-                }
+            .padding(.vertical)
+        }
+        .navigationTitle("Drink Menu")
+        .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemBackground))
+    }
+}
+
+// MARK: - Supporting Views
+struct SearchBar: View {
+    @Binding var text: String
+    var placeholder: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+            
+            TextField(placeholder, text: $text)
+                .textFieldStyle(PlainTextFieldStyle())
+        }
+        .padding(8)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+    }
+}
+
+struct CategoryButton: View {
+    let icon: String
+    let title: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title2)
+            Text(title)
+                .font(.caption)
+        }
+        .foregroundColor(.white)
+        .frame(width: 80, height: 80)
+        .background(color)
+        .cornerRadius(12)
+    }
+}
+
+struct DrinkCard: View {
+    let drink: Drink
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Drink image
+            Image(drink.imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 120, height: 120)
+                .cornerRadius(8)
+            
+            Text(drink.name)
+                .font(.subheadline)
+                .lineLimit(1)
+            
+            Text("$\(drink.price, specifier: "%.2f")")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(width: 120)
+    }
+}
+
+struct DrinkRow: View {
+    let drink: Drink
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Drink image
+            Image(drink.imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 60, height: 60)
+                .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(drink.name)
+                    .font(.body)
+                Text("$\(drink.price, specifier: "%.2f")")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Button(action: {
+                // Add to cart
+            }) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.blue)
             }
         }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
     }
 }
 
 #if DEBUG
 struct DrinkMenuView_Previews: PreviewProvider {
     static var previews: some View {
-        DrinkMenuView()
+        NavigationView {
+            DrinkMenuView()
+        }
     }
 }
 #endif 

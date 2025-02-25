@@ -1,65 +1,55 @@
-# FOMO App
+# MCP Server for Cursor IDE
 
-A modern iOS application for managing venue passes, browsing venues, and ordering drinks. Built with SwiftUI for iOS 18.1.
+A secure local MCP (Message Control Protocol) server for Cursor IDE that enables terminal command execution and file access.
 
 ## Features
 
-- **Venue Discovery**: Browse and search through available venues
-- **Digital Passes**: Manage your venue passes and tickets
-- **Drink Ordering**: View drink menus and place orders
-- **Profile Management**: Manage your profile and preferences
-- **Payment Integration**: Secure payment processing for passes and drinks
+- Secure local-only access
+- Terminal command execution
+- File reading capabilities
+- Built-in security measures
+- Health check endpoint
 
-## Technical Details
+## Installation
 
-- iOS Target: 18.1+
-- Device Support: iPhone 15 and newer
-- Framework: SwiftUI
-- Architecture: MVVM
-- Preview Support: Full SwiftUI Preview integration
-
-## Setup Requirements
-
-- Xcode 15.4+
-- iOS 18.1+ Simulator or Device
-- Swift 5.9+
-
-## Getting Started
-
-1. Clone the repository:
+1. Make sure you have Node.js installed
+2. Clone or download this repository
+3. Install dependencies:
 ```bash
-git clone https://github.com/Dompi123/fomofinal.git
+npm install
 ```
 
-2. Open the project:
+## Usage
+
+1. Start the server:
 ```bash
-cd fomofinal
-xcodegen generate
-open FOMO_FINAL.xcodeproj
+npm start
 ```
 
-3. Run the app in the simulator (FOMO_Simulator) or on a device
+2. The server will run on `http://localhost:5000`
 
-## Preview Data
+3. In Cursor IDE:
+   - Go to Settings > Features > MCP Servers
+   - Click "Add new MCP server"
+   - Select "Command" option
+   - Enter name: "Local MCP Server"
+   - Command: `node /Users/saeidrafiei/Desktop/mcp-server/server.js`
+   - Click "Add"
 
-The app includes preview data for testing and development:
-- Sample venues
-- Preview passes
-- Mock drink menus
-- Test user profiles
+## API Endpoints
 
-## Development
+- `GET /health` - Check server status
+- `POST /execute` - Execute terminal commands
+- `POST /read-file` - Read file contents
 
-- Use `scripts/validate_ios17_simulator.sh` for simulator validation
-- Run `scripts/nuclear_reset.sh` for clean project reset
-- Preview data can be found in `FOMO_FINAL/Preview Content`
+## Security Features
 
-## Testing
+- Local-only access (127.0.0.1 and ::1)
+- Command validation and sanitization
+- Path traversal protection
+- Request timeout limits
+- Dangerous command prevention
 
-- Unit Tests: `FOMO_FINALTests` target
-- UI Tests: `FOMO_FINALUITests` target
-- Preview Tests: Available in debug builds
+## Note
 
-## License
-
-Copyright © 2025 FOMO. All rights reserved. 
+This server is designed for local development use only. Do not expose it to the public internet. 
