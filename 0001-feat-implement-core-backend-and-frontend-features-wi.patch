@@ -1,0 +1,1086 @@
+From c0b07f78f6ff89d9cd9321f8f46b499c22c4687d Mon Sep 17 00:00:00 2001
+From: Saeid <Rafiei>
+Date: Tue, 25 Feb 2025 01:18:20 -0400
+Subject: [PATCH] feat: implement core backend and frontend features with
+ integrated payment flow
+
+---
+ COLLABORATION_GUIDE.md                        |  35 +++
+ README.md                                     |  82 +++---
+ apps/api                                      |   2 +-
+ .../Features/Drinks/Views/CheckoutView.swift  | 244 +++++++++++++++---
+ .../Features/Drinks/Views/DrinkMenuView.swift | 209 +++++++++++----
+ .../Features/Passes/Views/PassCardView.swift  | 134 ++++++++++
+ .../Passes/Views/PassPresentationView.swift   | 105 ++++++++
+ .../Features/Passes/Views/PassesView.swift    |  67 +++--
+ git_workflow.md                               |  15 ++
+ 9 files changed, 739 insertions(+), 154 deletions(-)
+ create mode 100644 COLLABORATION_GUIDE.md
+ create mode 100644 apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassCardView.swift
+ create mode 100644 apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassPresentationView.swift
+ create mode 100644 git_workflow.md
+
+diff --git a/COLLABORATION_GUIDE.md b/COLLABORATION_GUIDE.md
+new file mode 100644
+index 0000000..909ec6f
+--- /dev/null
++++ b/COLLABORATION_GUIDE.md
+@@ -0,0 +1,35 @@
++# FOMO Project Collaboration Guide
++
++## Daily Workflow
++
++1. Start of Day:
++   git checkout main
++   git pull origin main
++   git checkout -b feature/[YOUR_FEATURE]
++
++2. During Development:
++   - Commit frequently
++   - Push to your branch
++   - Update from main regularly
++
++3. End of Day:
++   - Push all changes
++   - Create PR if feature complete
++   - Document changes in shared doc
++
++## Conflict Prevention:
++
++### File Ownership:
++- Features/Venues: Developer 1
++- Features/Drinks: Developer 2
++- Core/Navigation: Shared (coordinate)
++
++### Communication:
++- Daily standup at [TIME]
++- Shared doc: [LINK]
++- Emergency contact: [CONTACT]
++
++### Branch Naming:
++- feature/[feature-name]
++- bugfix/[bug-name]
++- hotfix/[issue-name]
+diff --git a/README.md b/README.md
+index 6e5c72b..cea88f8 100644
+--- a/README.md
++++ b/README.md
+@@ -1,65 +1,55 @@
+-# FOMO App
++# MCP Server for Cursor IDE
+ 
+-A modern iOS application for managing venue passes, browsing venues, and ordering drinks. Built with SwiftUI for iOS 18.1.
++A secure local MCP (Message Control Protocol) server for Cursor IDE that enables terminal command execution and file access.
+ 
+ ## Features
+ 
+-- **Venue Discovery**: Browse and search through available venues
+-- **Digital Passes**: Manage your venue passes and tickets
+-- **Drink Ordering**: View drink menus and place orders
+-- **Profile Management**: Manage your profile and preferences
+-- **Payment Integration**: Secure payment processing for passes and drinks
++- Secure local-only access
++- Terminal command execution
++- File reading capabilities
++- Built-in security measures
++- Health check endpoint
+ 
+-## Technical Details
++## Installation
+ 
+-- iOS Target: 18.1+
+-- Device Support: iPhone 15 and newer
+-- Framework: SwiftUI
+-- Architecture: MVVM
+-- Preview Support: Full SwiftUI Preview integration
+-
+-## Setup Requirements
+-
+-- Xcode 15.4+
+-- iOS 18.1+ Simulator or Device
+-- Swift 5.9+
+-
+-## Getting Started
+-
+-1. Clone the repository:
++1. Make sure you have Node.js installed
++2. Clone or download this repository
++3. Install dependencies:
+ ```bash
+-git clone https://github.com/Dompi123/fomofinal.git
++npm install
+ ```
+ 
+-2. Open the project:
++## Usage
++
++1. Start the server:
+ ```bash
+-cd fomofinal
+-xcodegen generate
+-open FOMO_FINAL.xcodeproj
++npm start
+ ```
+ 
+-3. Run the app in the simulator (FOMO_Simulator) or on a device
+-
+-## Preview Data
++2. The server will run on `http://localhost:5000`
+ 
+-The app includes preview data for testing and development:
+-- Sample venues
+-- Preview passes
+-- Mock drink menus
+-- Test user profiles
++3. In Cursor IDE:
++   - Go to Settings > Features > MCP Servers
++   - Click "Add new MCP server"
++   - Select "Command" option
++   - Enter name: "Local MCP Server"
++   - Command: `node /Users/saeidrafiei/Desktop/mcp-server/server.js`
++   - Click "Add"
+ 
+-## Development
++## API Endpoints
+ 
+-- Use `scripts/validate_ios17_simulator.sh` for simulator validation
+-- Run `scripts/nuclear_reset.sh` for clean project reset
+-- Preview data can be found in `FOMO_FINAL/Preview Content`
++- `GET /health` - Check server status
++- `POST /execute` - Execute terminal commands
++- `POST /read-file` - Read file contents
+ 
+-## Testing
++## Security Features
+ 
+-- Unit Tests: `FOMO_FINALTests` target
+-- UI Tests: `FOMO_FINALUITests` target
+-- Preview Tests: Available in debug builds
++- Local-only access (127.0.0.1 and ::1)
++- Command validation and sanitization
++- Path traversal protection
++- Request timeout limits
++- Dangerous command prevention
+ 
+-## License
++## Note
+ 
+-Copyright © 2025 FOMO. All rights reserved. 
+\ No newline at end of file
++This server is designed for local development use only. Do not expose it to the public internet. 
+\ No newline at end of file
+diff --git a/apps/api b/apps/api
+index ccd1fc3..cb961fd 160000
+--- a/apps/api
++++ b/apps/api
+@@ -1 +1 @@
+-Subproject commit ccd1fc3fa84c778deee705e576daf1866a670451
++Subproject commit cb961fd505eef1e3950eea94282bf4cda9e655a3
+diff --git a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/CheckoutView.swift b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/CheckoutView.swift
+index 22caca6..77054fc 100644
+--- a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/CheckoutView.swift
++++ b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/CheckoutView.swift
+@@ -3,8 +3,11 @@ import OSLog
+ 
+ struct CheckoutView: View {
+     @StateObject private var viewModel: CheckoutViewModel
+-    @Environment(\.dismiss) var dismiss
+-    @Environment(\.previewMode) private var previewMode
++    @Environment(\.dismiss) private var dismiss
++    @State private var selectedTip: Int?
++    @State private var customTip: String = ""
++    @State private var showingPassPresentation = false
++    @State private var orderPass: Pass?
+     
+     init(order: DrinkOrder) {
+         _viewModel = StateObject(wrappedValue: CheckoutViewModel(order: order))
+@@ -12,59 +15,222 @@ struct CheckoutView: View {
+     
+     var body: some View {
+         NavigationView {
+-            VStack {
+-                List {
+-                    ForEach(viewModel.order.items) { item in
+-                        HStack {
+-                            Text(item.drink.name)
+-                            Spacer()
+-                            Text("$\(Double(truncating: item.drink.price as NSNumber), specifier: "%.2f")")
++            ScrollView {
++                VStack(spacing: 24) {
++                    // Order items
++                    VStack(spacing: 16) {
++                        ForEach(viewModel.order.items) { item in
++                            OrderItemRow(item: item) { count in
++                                viewModel.updateItemCount(item, count: count)
++                            }
+                         }
+                     }
++                    .padding(.horizontal)
+                     
+-                    Section {
++                    // Tip section
++                    VStack(alignment: .leading, spacing: 12) {
++                        Text("Add Tip ❤️")
++                            .font(.headline)
++                        
++                        Text("All your tips go directly to your bartenders!")
++                            .font(.subheadline)
++                            .foregroundColor(.secondary)
++                        
++                        // Tip options
++                        HStack(spacing: 8) {
++                            ForEach([1, 2, 3], id: \.self) { amount in
++                                TipButton(
++                                    amount: amount,
++                                    isSelected: selectedTip == amount,
++                                    action: { selectedTip = amount }
++                                )
++                            }
++                            
++                            // Custom tip
++                            TipButton(
++                                text: "Other",
++                                isSelected: selectedTip == nil && !customTip.isEmpty,
++                                action: {
++                                    selectedTip = nil
++                                    customTip = ""
++                                }
++                            )
++                        }
++                        
++                        if selectedTip == nil {
++                            TextField("Enter custom tip", text: $customTip)
++                                .keyboardType(.decimalPad)
++                                .textFieldStyle(RoundedBorderTextFieldStyle())
++                        }
++                    }
++                    .padding()
++                    .background(Color(.systemGray6))
++                    .cornerRadius(12)
++                    .padding(.horizontal)
++                    
++                    // Payment method
++                    VStack(alignment: .leading, spacing: 12) {
++                        Text("Payment Method")
++                            .font(.headline)
++                        
+                         HStack {
+-                            Text("Total")
+-                                .font(.headline)
++                            Image("visa-icon") // Add appropriate asset
++                                .resizable()
++                                .frame(width: 32, height: 20)
++                            Text("•••• 4567")
+                             Spacer()
+-                            Text("$\(Double(truncating: viewModel.order.total as NSNumber), specifier: "%.2f")")
+-                                .font(.headline)
++                            Button("Switch") {
++                                // Handle payment method switch
++                            }
++                            .foregroundColor(.blue)
+                         }
++                        .padding()
++                        .background(Color(.systemGray6))
++                        .cornerRadius(8)
+                     }
++                    .padding(.horizontal)
++                    
++                    // Order summary
++                    VStack(spacing: 8) {
++                        SummaryRow(title: "Subtotal", amount: viewModel.subtotal)
++                        SummaryRow(title: "Tip", amount: viewModel.tipAmount)
++                        SummaryRow(title: "Tax & Fees", amount: viewModel.taxAndFees)
++                        Divider()
++                        SummaryRow(title: "Total", amount: viewModel.total, isTotal: true)
++                    }
++                    .padding()
++                    .background(Color(.systemGray6))
++                    .cornerRadius(12)
++                    .padding(.horizontal)
++                }
++                .padding(.vertical)
++            }
++            .navigationTitle("Your Order")
++            .navigationBarTitleDisplayMode(.inline)
++            .toolbar {
++                ToolbarItem(placement: .navigationBarLeading) {
++                    Button("Back") { dismiss() }
+                 }
+                 
++                ToolbarItem(placement: .navigationBarTrailing) {
++                    Button("Add Drink") {
++                        // Handle add drink
++                    }
++                }
++            }
++            .safeAreaInset(bottom: {
+                 Button(action: {
+                     Task {
+-                        await viewModel.processOrder()
+-                        dismiss()
++                        if let pass = await viewModel.placeOrder() {
++                            orderPass = pass
++                            showingPassPresentation = true
++                        }
+                     }
+                 }) {
+-                    if viewModel.isProcessing {
+-                        ProgressView()
+-                            .progressViewStyle(CircularProgressViewStyle())
+-                    } else {
++                    HStack {
+                         Text("Place Order")
+-                            .font(.headline)
+-                            .foregroundColor(.white)
+-                            .frame(maxWidth: .infinity)
+-                            .padding()
+-                            .background(Color.blue)
+-                            .cornerRadius(10)
++                        Spacer()
++                        Text("$\(viewModel.total, specifier: "%.2f")")
+                     }
++                    .padding()
++                    .background(Color.blue)
++                    .foregroundColor(.white)
++                    .cornerRadius(12)
++                    .padding()
++                }
++                .background(Color(.systemBackground))
++            })
++            .fullScreenCover(isPresented: $showingPassPresentation) {
++                if let pass = orderPass {
++                    PassPresentationView(pass: pass)
+                 }
+-                .disabled(viewModel.isProcessing)
+-                .padding()
+             }
+-            .navigationTitle("Checkout")
+-            .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+-                Button("OK") {
+-                    viewModel.error = nil
++        }
++    }
++}
++
++// MARK: - Supporting Views
++struct OrderItemRow: View {
++    let item: DrinkOrderItem
++    let onCountChanged: (Int) -> Void
++    
++    var body: some View {
++        HStack(spacing: 16) {
++            // Counter
++            HStack {
++                Button(action: { onCountChanged(max(0, item.quantity - 1)) }) {
++                    Image(systemName: "minus.circle.fill")
++                        .foregroundColor(.gray)
+                 }
+-            } message: {
+-                if let error = viewModel.error {
+-                    Text(error.localizedDescription)
++                
++                Text("\(item.quantity)")
++                    .frame(width: 30)
++                
++                Button(action: { onCountChanged(item.quantity + 1) }) {
++                    Image(systemName: "plus.circle.fill")
++                        .foregroundColor(.blue)
+                 }
+             }
++            
++            VStack(alignment: .leading, spacing: 4) {
++                Text(item.drink.name)
++                    .font(.body)
++                Text("$\(item.drink.price, specifier: "%.2f")")
++                    .font(.subheadline)
++                    .foregroundColor(.secondary)
++            }
++            
++            Spacer()
++            
++            Button("Remove") {
++                onCountChanged(0)
++            }
++            .foregroundColor(.red)
++        }
++        .padding()
++        .background(Color(.systemGray6))
++        .cornerRadius(12)
++    }
++}
++
++struct TipButton: View {
++    var amount: Int?
++    var text: String?
++    let isSelected: Bool
++    let action: () -> Void
++    
++    init(amount: Int? = nil, text: String? = nil, isSelected: Bool, action: @escaping () -> Void) {
++        self.amount = amount
++        self.text = text
++        self.isSelected = isSelected
++        self.action = action
++    }
++    
++    var body: some View {
++        Button(action: action) {
++            Text(text ?? "$\(amount ?? 0)")
++                .font(.headline)
++                .frame(maxWidth: .infinity)
++                .padding()
++                .background(isSelected ? Color.blue : Color(.systemGray5))
++                .foregroundColor(isSelected ? .white : .primary)
++                .cornerRadius(8)
++        }
++    }
++}
++
++struct SummaryRow: View {
++    let title: String
++    let amount: Double
++    var isTotal: Bool = false
++    
++    var body: some View {
++        HStack {
++            Text(title)
++                .font(isTotal ? .headline : .body)
++            Spacer()
++            Text("$\(amount, specifier: "%.2f")")
++                .font(isTotal ? .headline : .body)
+         }
+     }
+ }
+@@ -72,13 +238,7 @@ struct CheckoutView: View {
+ #if DEBUG
+ struct CheckoutView_Previews: PreviewProvider {
+     static var previews: some View {
+-        CheckoutView(order: DrinkOrder(items: [
+-            DrinkOrderItem(drink: .mock, quantity: 2),
+-            DrinkOrderItem(drink: .mock2, quantity: 1)
+-        ]))
+-        .environmentObject(PreviewNavigationCoordinator.shared)
+-        .environment(\.previewMode, true)
+-        .environment(\.previewPaymentState, .ready)
++        CheckoutView(order: .mock)
+     }
+ }
+ #endif 
+diff --git a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/DrinkMenuView.swift b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/DrinkMenuView.swift
+index 33eed0b..c5a143e 100644
+--- a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/DrinkMenuView.swift
++++ b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Drinks/Views/DrinkMenuView.swift
+@@ -3,72 +3,189 @@ import OSLog
+ 
+ struct DrinkMenuView: View {
+     @StateObject private var viewModel = DrinkMenuViewModel()
+-    @Environment(\.dismiss) private var dismiss
+-    @State private var selectedDrinks: Set<String> = []
+-    @State private var showCheckout = false
++    @State private var searchText = ""
+     
+     var body: some View {
+-        NavigationView {
+-            Group {
+-                if viewModel.isLoading {
+-                    ProgressView()
+-                } else if let error = viewModel.error {
+-                    Text(error.localizedDescription)
+-                        .foregroundColor(.red)
+-                } else if viewModel.menuItems.isEmpty {
+-                    ContentUnavailableView("No Drinks Available",
+-                        systemImage: "wineglass",
+-                        description: Text("The drink menu is currently empty.")
+-                    )
+-                } else {
+-                    List {
+-                        ForEach(viewModel.menuItems) { drink in
+-                            DrinkRowView(
+-                                drink: drink,
+-                                isSelected: selectedDrinks.contains(drink.id)
+-                            ) {
+-                                if selectedDrinks.contains(drink.id) {
+-                                    selectedDrinks.remove(drink.id)
+-                                } else {
+-                                    selectedDrinks.insert(drink.id)
++        ScrollView {
++            VStack(spacing: 24) {
++                // Search bar
++                SearchBar(text: $searchText, placeholder: "What do you want to drink?")
++                    .padding(.horizontal)
++                
++                // Categories section
++                VStack(alignment: .leading, spacing: 16) {
++                    Text("Categories")
++                        .font(.headline)
++                        .padding(.horizontal)
++                    
++                    ScrollView(.horizontal, showsIndicators: false) {
++                        HStack(spacing: 12) {
++                            CategoryButton(
++                                icon: "arrow.clockwise",
++                                title: "Order Again",
++                                color: .blue
++                            )
++                            
++                            CategoryButton(
++                                icon: "wineglass",
++                                title: "Signatures",
++                                color: .red
++                            )
++                            
++                            CategoryButton(
++                                icon: "bottle",
++                                title: "Bottled Beer",
++                                color: .orange
++                            )
++                        }
++                        .padding(.horizontal)
++                    }
++                }
++                
++                // Order Again section
++                if !viewModel.recentDrinks.isEmpty {
++                    VStack(alignment: .leading, spacing: 16) {
++                        Text("Order Again")
++                            .font(.headline)
++                            .padding(.horizontal)
++                        
++                        ScrollView(.horizontal, showsIndicators: false) {
++                            HStack(spacing: 16) {
++                                ForEach(viewModel.recentDrinks) { drink in
++                                    DrinkCard(drink: drink)
+                                 }
+                             }
++                            .padding(.horizontal)
+                         }
+                     }
+                 }
+-            }
+-            .navigationTitle("Drink Menu")
+-            .toolbar {
+-                ToolbarItem(placement: .navigationBarTrailing) {
+-                    Button("Done") { dismiss() }
+-                }
+                 
+-                if !selectedDrinks.isEmpty {
+-                    ToolbarItem(placement: .bottomBar) {
+-                        Button("Checkout (\(selectedDrinks.count))") {
+-                            let items = viewModel.menuItems
+-                                .filter { selectedDrinks.contains($0.id) }
+-                                .map { DrinkOrderItem(drink: $0) }
+-                            viewModel.createOrder(items: items)
+-                            showCheckout = true
++                // Featured drinks
++                VStack(alignment: .leading, spacing: 16) {
++                    Text("Signatures")
++                        .font(.headline)
++                        .padding(.horizontal)
++                    
++                    LazyVStack(spacing: 16) {
++                        ForEach(viewModel.signatureDrinks) { drink in
++                            DrinkRow(drink: drink)
++                                .padding(.horizontal)
+                         }
+-                        .buttonStyle(.borderedProminent)
+                     }
+                 }
+             }
+-            .sheet(isPresented: $showCheckout) {
+-                if let order = viewModel.currentOrder {
+-                    CheckoutView(order: order)
+-                }
++            .padding(.vertical)
++        }
++        .navigationTitle("Drink Menu")
++        .navigationBarTitleDisplayMode(.inline)
++        .background(Color(.systemBackground))
++    }
++}
++
++// MARK: - Supporting Views
++struct SearchBar: View {
++    @Binding var text: String
++    var placeholder: String
++    
++    var body: some View {
++        HStack {
++            Image(systemName: "magnifyingglass")
++                .foregroundColor(.gray)
++            
++            TextField(placeholder, text: $text)
++                .textFieldStyle(PlainTextFieldStyle())
++        }
++        .padding(8)
++        .background(Color(.systemGray6))
++        .cornerRadius(8)
++    }
++}
++
++struct CategoryButton: View {
++    let icon: String
++    let title: String
++    let color: Color
++    
++    var body: some View {
++        VStack(spacing: 8) {
++            Image(systemName: icon)
++                .font(.title2)
++            Text(title)
++                .font(.caption)
++        }
++        .foregroundColor(.white)
++        .frame(width: 80, height: 80)
++        .background(color)
++        .cornerRadius(12)
++    }
++}
++
++struct DrinkCard: View {
++    let drink: Drink
++    
++    var body: some View {
++        VStack(alignment: .leading, spacing: 8) {
++            // Drink image
++            Image(drink.imageName)
++                .resizable()
++                .aspectRatio(contentMode: .fill)
++                .frame(width: 120, height: 120)
++                .cornerRadius(8)
++            
++            Text(drink.name)
++                .font(.subheadline)
++                .lineLimit(1)
++            
++            Text("$\(drink.price, specifier: "%.2f")")
++                .font(.caption)
++                .foregroundColor(.secondary)
++        }
++        .frame(width: 120)
++    }
++}
++
++struct DrinkRow: View {
++    let drink: Drink
++    
++    var body: some View {
++        HStack(spacing: 16) {
++            // Drink image
++            Image(drink.imageName)
++                .resizable()
++                .aspectRatio(contentMode: .fill)
++                .frame(width: 60, height: 60)
++                .cornerRadius(8)
++            
++            VStack(alignment: .leading, spacing: 4) {
++                Text(drink.name)
++                    .font(.body)
++                Text("$\(drink.price, specifier: "%.2f")")
++                    .font(.subheadline)
++                    .foregroundColor(.secondary)
++            }
++            
++            Spacer()
++            
++            Button(action: {
++                // Add to cart
++            }) {
++                Image(systemName: "plus.circle.fill")
++                    .font(.title2)
++                    .foregroundColor(.blue)
+             }
+         }
++        .padding()
++        .background(Color(.systemGray6))
++        .cornerRadius(12)
+     }
+ }
+ 
+ #if DEBUG
+ struct DrinkMenuView_Previews: PreviewProvider {
+     static var previews: some View {
+-        DrinkMenuView()
++        NavigationView {
++            DrinkMenuView()
++        }
+     }
+ }
+ #endif 
+\ No newline at end of file
+diff --git a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassCardView.swift b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassCardView.swift
+new file mode 100644
+index 0000000..279df13
+--- /dev/null
++++ b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassCardView.swift
+@@ -0,0 +1,134 @@
++import SwiftUI
++
++struct PassCardView: View {
++    let pass: Pass
++    let isFullScreen: Bool
++    @StateObject private var viewModel: PassPresentationViewModel
++    
++    init(pass: Pass, isFullScreen: Bool) {
++        self.pass = pass
++        self.isFullScreen = isFullScreen
++        self._viewModel = StateObject(wrappedValue: PassPresentationViewModel())
++    }
++    
++    var body: some View {
++        VStack(spacing: 0) {
++            // Header
++            VStack(alignment: .leading, spacing: 8) {
++                Text(pass.venueName)
++                    .font(.subheadline)
++                    .foregroundColor(.white.opacity(0.8))
++                
++                Text(pass.type.displayName)
++                    .font(.title2)
++                    .fontWeight(.bold)
++                    .foregroundColor(.white)
++                
++                if !isFullScreen {
++                    HStack {
++                        Text("Use by \(pass.expiryDate.formatted(date: .numeric, time: .shortened))")
++                            .font(.caption)
++                            .foregroundColor(.white.opacity(0.8))
++                        
++                        Spacer()
++                        
++                        Image(systemName: "chevron.right")
++                            .foregroundColor(.white.opacity(0.6))
++                    }
++                }
++            }
++            .padding()
++            .background(
++                LinearGradient(
++                    colors: pass.type == .drink ? 
++                        [Color.pink, Color.pink.opacity(0.8)] :
++                        [Color.blue, Color.blue.opacity(0.8)],
++                    startPoint: .topLeading,
++                    endPoint: .bottomTrailing
++                )
++            )
++            .cornerRadius(isFullScreen ? 0 : 12, corners: .allCorners)
++            
++            if isFullScreen {
++                // Full screen additional content
++                VStack(spacing: 24) {
++                    // Pass holder info
++                    VStack(spacing: 4) {
++                        Text("Passholder")
++                            .font(.caption)
++                            .foregroundColor(.secondary)
++                        Text(pass.holderName)
++                            .font(.body)
++                    }
++                    
++                    // Use by date
++                    VStack(spacing: 4) {
++                        Text("Use by")
++                            .font(.caption)
++                            .foregroundColor(.secondary)
++                        Text(pass.expiryDate.formatted(date: .numeric, time: .shortened))
++                            .font(.body)
++                    }
++                    
++                    // Instructions
++                    Text(pass.type == .drink ? 
++                        "Show this screen to the bartender" :
++                        "Show this screen to the doorman")
++                        .font(.headline)
++                        .multilineTextAlignment(.center)
++                        .padding(.horizontal)
++                    
++                    // Action button
++                    Button(action: {
++                        Task {
++                            await viewModel.verifyPass(pass)
++                        }
++                    }) {
++                        Text(pass.type == .drink ? "I Am The Bartender" : "I Am The Doorman")
++                            .font(.headline)
++                            .foregroundColor(.white)
++                            .frame(maxWidth: .infinity)
++                            .padding()
++                            .background(Color(.systemGray4))
++                            .cornerRadius(12)
++                    }
++                    .padding(.horizontal)
++                    
++                    Button(action: {
++                        // Show redemption instructions
++                    }) {
++                        Text("How to Redeem")
++                            .font(.headline)
++                            .foregroundColor(.white)
++                            .frame(maxWidth: .infinity)
++                            .padding()
++                            .background(Color.blue)
++                            .cornerRadius(12)
++                    }
++                    .padding(.horizontal)
++                }
++                .padding(.vertical, 24)
++            }
++        }
++        .background(isFullScreen ? Color(.systemBackground) : Color.clear)
++        .alert("Pass Used", isPresented: $viewModel.showSuccessAlert) {
++            Button("OK", role: .cancel) { }
++        } message: {
++            Text(pass.type == .drink ? 
++                "Your drink pass has been redeemed" :
++                "Your line skip pass has been validated")
++        }
++    }
++}
++
++// MARK: - Preview
++#if DEBUG
++struct PassCardView_Previews: PreviewProvider {
++    static var previews: some View {
++        Group {
++            PassCardView(pass: .mockDrinkPass, isFullScreen: false)
++            PassCardView(pass: .mockLineSkipPass, isFullScreen: true)
++        }
++    }
++}
++#endif 
+\ No newline at end of file
+diff --git a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassPresentationView.swift b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassPresentationView.swift
+new file mode 100644
+index 0000000..188458c
+--- /dev/null
++++ b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassPresentationView.swift
+@@ -0,0 +1,105 @@
++import SwiftUI
++
++struct PassPresentationView: View {
++    let pass: Pass
++    @Environment(\.dismiss) private var dismiss
++    @StateObject private var viewModel = PassPresentationViewModel()
++    
++    var body: some View {
++        NavigationView {
++            VStack(spacing: 0) {
++                // Pass card in full-screen mode
++                PassCardView(pass: pass, isFullScreen: true)
++                    .edgesIgnoringSafeArea(.horizontal)
++                
++                Spacer()
++                
++                // Bottom tab bar (matches design)
++                HStack(spacing: 32) {
++                    TabBarButton(
++                        icon: "mappin.circle.fill",
++                        text: "Venues",
++                        isSelected: false
++                    )
++                    
++                    TabBarButton(
++                        icon: "ticket.fill",
++                        text: "Passes",
++                        isSelected: true
++                    )
++                    
++                    TabBarButton(
++                        icon: "person.circle.fill",
++                        text: "Account",
++                        isSelected: false
++                    )
++                }
++                .padding(.bottom, 8)
++                .background(Color(.systemBackground))
++            }
++            .navigationBarTitleDisplayMode(.inline)
++            .navigationTitle("My Passes")
++            .toolbar {
++                ToolbarItem(placement: .navigationBarLeading) {
++                    Button(action: { dismiss() }) {
++                        Image(systemName: "chevron.left")
++                            .foregroundColor(.primary)
++                    }
++                }
++            }
++            .alert("Pass Used", isPresented: $viewModel.showSuccessAlert) {
++                Button("OK") { dismiss() }
++            } message: {
++                Text(pass.type == .drink ? 
++                    "Your drink pass has been redeemed" :
++                    "Your line skip pass has been validated")
++            }
++        }
++    }
++}
++
++// MARK: - Supporting Views
++private struct TabBarButton: View {
++    let icon: String
++    let text: String
++    let isSelected: Bool
++    
++    var body: some View {
++        VStack(spacing: 4) {
++            Image(systemName: icon)
++                .font(.title3)
++            Text(text)
++                .font(.caption2)
++        }
++        .foregroundColor(isSelected ? .blue : .gray)
++    }
++}
++
++// MARK: - ViewModel
++class PassPresentationViewModel: ObservableObject {
++    @Published var showSuccessAlert = false
++    
++    func verifyPass(_ pass: Pass) async {
++        do {
++            // Call the API endpoint we updated earlier
++            let result = try await PassService.shared.usePass(pass.id)
++            
++            if result.success {
++                DispatchQueue.main.async {
++                    self.showSuccessAlert = true
++                }
++            }
++        } catch {
++            print("Error verifying pass:", error)
++        }
++    }
++}
++
++#if DEBUG
++struct PassPresentationView_Previews: PreviewProvider {
++    static var previews: some View {
++        PassPresentationView(pass: .mockDrinkPass)
++        PassPresentationView(pass: .mockLineSkipPass)
++    }
++}
++#endif 
+\ No newline at end of file
+diff --git a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassesView.swift b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassesView.swift
+index 83a60b1..9a14189 100644
+--- a/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassesView.swift
++++ b/apps/web/FOMO_PRODUCTION/FOMO_PRODUCTION_APP/Features/Passes/Views/PassesView.swift
+@@ -3,48 +3,77 @@ import OSLog
+ 
+ struct PassesView: View {
+     @StateObject private var viewModel = PassesViewModel()
++    @State private var selectedPass: Pass?
++    @State private var showingPassPresentation = false
+     
+     var body: some View {
+         NavigationView {
+-            Group {
+-                if viewModel.isLoading {
+-                    ProgressView()
+-                } else if let error = viewModel.error {
+-                    Text(error.localizedDescription)
+-                        .foregroundColor(.red)
+-                } else if viewModel.passes.isEmpty {
+-                    ContentUnavailableView("No Passes", 
+-                        systemImage: "ticket",
+-                        description: Text("You don't have any passes yet. Visit a venue to purchase one!")
+-                    )
+-                } else {
+-                    List {
+-                        Section("Active Passes") {
+-                            ForEach(viewModel.activePasses) { pass in
+-                                PassRowView(pass: pass)
++            ScrollView {
++                LazyVStack(spacing: 16) {
++                    if viewModel.isLoading {
++                        ProgressView()
++                    } else if let error = viewModel.error {
++                        Text(error.localizedDescription)
++                            .foregroundColor(.red)
++                    } else if viewModel.passes.isEmpty {
++                        ContentUnavailableView("No Passes", 
++                            systemImage: "ticket",
++                            description: Text("You don't have any passes yet. Visit a venue to purchase one!")
++                        )
++                    } else {
++                        // Active Passes Section
++                        if !viewModel.activePasses.isEmpty {
++                            VStack(alignment: .leading, spacing: 12) {
++                                Text("Active Passes")
++                                    .font(.headline)
++                                    .padding(.horizontal)
++                                
++                                ForEach(viewModel.activePasses) { pass in
++                                    PassCardView(pass: pass, isFullScreen: false)
++                                        .padding(.horizontal)
++                                        .onTapGesture {
++                                            selectedPass = pass
++                                            showingPassPresentation = true
++                                        }
++                                }
+                             }
+                         }
+                         
++                        // Expired Passes Section
+                         if !viewModel.expiredPasses.isEmpty {
+-                            Section("Expired Passes") {
++                            VStack(alignment: .leading, spacing: 12) {
++                                Text("Expired Passes")
++                                    .font(.headline)
++                                    .padding(.horizontal)
++                                
+                                 ForEach(viewModel.expiredPasses) { pass in
+-                                    PassRowView(pass: pass)
++                                    PassCardView(pass: pass, isFullScreen: false)
++                                        .padding(.horizontal)
++                                        .opacity(0.6)
+                                 }
+                             }
++                            .padding(.top, 24)
+                         }
+                     }
+                 }
++                .padding(.vertical)
+             }
+             .navigationTitle("My Passes")
+             .task {
+                 await viewModel.loadPasses()
+             }
++            .fullScreenCover(isPresented: $showingPassPresentation, content: {
++                if let pass = selectedPass {
++                    PassPresentationView(pass: pass)
++                }
++            })
+         }
+     }
+ }
+ 
+-struct PassRowView: View {
++struct PassCardView: View {
+     let pass: Pass
++    let isFullScreen: Bool
+     
+     var body: some View {
+         VStack(alignment: .leading, spacing: 8) {
+diff --git a/git_workflow.md b/git_workflow.md
+new file mode 100644
+index 0000000..707252f
+--- /dev/null
++++ b/git_workflow.md
+@@ -0,0 +1,15 @@
++# Daily Git Workflow
++
++# 1. Update main branch
++git checkout main
++git pull origin main
++
++# 2. Create feature branch
++git checkout -b feature/your-feature-name
++
++# 3. Work on your changes
++
++# 4. Regularly commit and push
++git add .
++git commit -m "descriptive message"
++git push origin feature/your-feature-name
+-- 
+2.39.5 (Apple Git-154)
+
